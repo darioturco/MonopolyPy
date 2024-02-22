@@ -7,7 +7,11 @@ class Player:
         self.money = sum(list(self.money_dict.values()))
         self.position = 0
         self.turns_in_jail = 0
-        self.propierties = {}
+        self.trains = 0
+        self.services = 0
+        self.last_dices = 0
+
+
 
     def set_data(self, game, num):
         self.game = game
@@ -17,23 +21,46 @@ class Player:
         return self.num == other.num
 
     def move(self, dices):
+        """ Advance one move of the player
+            Return a boolean that indicate if the player moves or don't """
         self.turns_in_jail -= 1
         if self.turns_in_jail > 0:
-            ### TODO: check if the player get two equal dices and can scape of jail
-            return
+            if self.game.dices.go_out_of_jail():
+                self.turns_in_jail = 0
+            else:
+                return False
 
-        self.position = (self.position + dices) % 40
+        self.last_dices = dices
+        self.position = self.position + dices
+        if self.position >= 40:
+            self.position = self.position % 40
+            self.money += 200
+
+        self.want_buy_houses()
         self.game.fall_in(self.position)
+        return True
 
-        # What the player do...
+    def purchase(self, building):
+        self.money -= building.price
+        self.game.buildings_purchased[self.position] = building
 
-    # TODO: Update the money_dict
     def pay(self, amount):
+        ### TODO: Update the money_dict
         self.money -= amount
 
     def go_to_jail(self):
         self.turns_in_jail = 3
         self.position = 10
+
+    def want_to_buy(self):
+        ### TODO: change and implement
+        # This should be delegated to an external module powered by a RL agent or a human
+        return True
+
+    def want_buy_houses(self):
+        """ The player decides whether them want to buy some houses """
+        ### TODO: delegate to the decision module of the player
+        return False
 
     def init_money_dict(self):
         return {1: 10, 5: 5, 10: 5, 20: 5, 50: 5, 100: 2, 500: 2}

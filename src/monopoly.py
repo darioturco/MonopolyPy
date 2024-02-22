@@ -15,6 +15,8 @@ class Monopoly:
         self.players = players
         self.player_index = 0
 
+        if dices is None:
+            dices = Dices(6)
         self.dices = dices
         self.building_selector = self.get_building_selector()
         self.buildings_purchased = {i: None for i in range(len(self.building_selector))}
@@ -26,15 +28,23 @@ class Monopoly:
         dices = self.dices.throw_dices()
         self.turn.move(dices)
 
+        self.check_if_game_end()
         self.turn = self.next_player()
+
+    def check_if_game_end(self):
+        for p in self.players:
+            if p.money < 0:
+                self.finish = True
+                #Todo: Set info of the finish game
 
     def fall_in(self, position):
         if self.is_free(position):
             self.building_selector[position](self.turn)
 
-        owner = self.get_owner_of(position)
-        if not owner != self.turn:
-            self.building_selector[position].pay(self.turn)
+        else:
+            owner = self.get_owner_of(position)
+            if not owner != self.turn:
+                self.building_selector[position].pay(owner, self.turn)
 
     def get_owner_of(self, position):
         """ Returns the player that purchased the building in the position passed. It assumes that the building has owner """
