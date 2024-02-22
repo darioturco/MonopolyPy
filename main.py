@@ -1,4 +1,6 @@
-from src.monopoly import Monopoly
+from src.monopoly import Monopoly, Dices
 
 if "__main__" == __name__:
-    print("Hello")
+    print("Monopoly...")
+    game = Monopoly(Dices(6))
+    game.move()
