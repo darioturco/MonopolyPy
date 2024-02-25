@@ -1,35 +1,44 @@
 import numpy as np
 from src.player import Player
 from src.buildings import VoidBuilding, JailBuilding, PropertyBuilding, LuckyBuilding, TaxesBuilding, TrainBuilding, ServiceBuilding
+from src.graphs.plain_text import PlainText
 
 class Monopoly:
     possible_players = ["car", "canyon", "horse", "hat", "ship", "dog", "iron", "barrow"]
 
-
-
-    def __init__(self, dices=None, players=None):
+    def __init__(self, dices=None, players=None, verbose=False):
         if players is None:
-            players = [Player(Monopoly.possible_players[0]), Player(Monopoly.possible_players[1])]
+            players = [Player(Monopoly.possible_players[0], "Player 1"), Player(Monopoly.possible_players[1], "Player 2")]
         for i, p in enumerate(players):
             p.set_data(self, i)
         self.players = players
         self.player_index = 0
 
         if dices is None:
-            dices = Dices(6)
+            #dices = Dices(6)
+            dices = TrickedDices(6)
         self.dices = dices
         self.building_selector = self.get_building_selector()
-        self.buildings_purchased = {i: None for i in range(len(self.building_selector))}
+        self.owners = {i: None for i in range(len(self.building_selector))}
         self.finish = False
+        self.verbose = verbose
+        self.render = PlainText(self)
 
         self.turn = self.players[self.player_index]
+        self.turn_count = 0
 
     def move(self):
-        dices = self.dices.throw_dices()
-        self.turn.move(dices)
+        if self.finish:
+            if self.verbose:
+                print("Game Over.")
+        else:
+            self.turn_count += 1
+            dices = self.dices.throw_dices()
+            self.turn.move(dices)
+            self.check_if_game_end()
+            self.turn = self.next_player()
+            self.render.print_status()
 
-        self.check_if_game_end()
-        self.turn = self.next_player()
 
     def check_if_game_end(self):
         for p in self.players:
@@ -43,19 +52,29 @@ class Monopoly:
 
         else:
             owner = self.get_owner_of(position)
-            if not owner != self.turn:
+            if owner != self.turn:
                 self.building_selector[position].pay(owner, self.turn)
+    def is_owner_of(self, player, position):
+        """ Returns whether the player own the position """
+        owner = self.get_owner_of(position)
+        return (owner is not None) and (player == owner)
 
     def get_owner_of(self, position):
-        """ Returns the player that purchased the building in the position passed. It assumes that the building has owner """
-        return self.buildings_purchased[position]
+        """ Returns the player that purchased the building in the position passed. """
+        return self.owners[position]
 
     def is_free(self, position):
-        ### Todo: Check that position is in range
-        return self.buildings_purchased[position] is None
+        """ Returns whether a position is already purchased by some player """
+        assert (0 <= position < len(self.owners)), "Error position out of range"
+        return self.owners[position] is None
     def next_player(self):
+        """ Return the next player to move """
         self.player_index = (self.player_index + 1) % len(self.players)
         return self.players[self.player_index]
+
+    def get_position_name(self, position):
+        """ Given a position value returns the name(String) of the building in that position """
+        return self.building_selector[position].name
 
     def get_building_selector(self):
         return  {0: VoidBuilding("Start"),
@@ -99,12 +118,34 @@ class Monopoly:
                   38: TaxesBuilding("Luxury Tax", 100),
                   39: PropertyBuilding("Boardwalk", 400, 50)}
 
+
+
 class Dices:
     def __init__(self, max_value):
         self.max_value = max_value
 
     def throw_dices(self):
         return np.sum(np.random.randint(self.max_value, size=2) + 1)
+
+    def go_out_of_jail(self):
+        return np.random.randint(self.max_value) == np.random.randint(self.max_value)
+
+class TrickedDices:
+    def __init__(self, max_value):
+        self.max_value = max_value
+        self.values = [6, 6]
+        self.index = 0
+
+    def throw_dices(self):
+        if self.index < len(self.values):
+            res = self.values[self.index]
+            self.index += 1
+
+        else:
+            res = np.sum(np.random.randint(self.max_value, size=2) + 1)
+
+        return res
+
 
     def go_out_of_jail(self):
         return np.random.randint(self.max_value) == np.random.randint(self.max_value)

@@ -47,7 +47,7 @@ class TrainBuilding(Building):
     def __init__(self, name):
         super().__init__(name)
         self.price = 200
-        self.pay = 25
+        self.to_pay = 25
 
     def __call__(self, player):
         if player.want_to_buy() and player.money >= self.price:
@@ -55,7 +55,7 @@ class TrainBuilding(Building):
             player.trains += 1
 
     def pay(self, owner, player):
-        to_pay = self.price * (2 ** (owner.trains-1))
+        to_pay = self.to_pay * (2 ** (owner.trains-1))
         player.pay(to_pay)
         owner.money += to_pay
 
@@ -63,7 +63,7 @@ class PropertyBuilding(Building):
     def __init__(self, name, price, pay):
         super().__init__(name)
         self.price = price
-        self.pay = pay
+        self.to_pay = pay
 
     def __call__(self, player):
         if player.want_to_buy() and player.money >= self.price:
@@ -71,17 +71,17 @@ class PropertyBuilding(Building):
 
     def pay(self, owner, player):
         if self.houses == 0:
-            to_pay = self.pay
+            to_pay = self.to_pay
         elif self.houses == 1:
-            to_pay = self.pay * 5
+            to_pay = self.to_pay * 5
         elif self.houses == 2:
-            to_pay = self.pay * 15
+            to_pay = self.to_pay * 15
         elif self.houses == 3:
-            to_pay = self.pay * 30
+            to_pay = self.to_pay * 30
         elif self.houses == 4:
-            to_pay = self.pay * 45
+            to_pay = self.to_pay * 45
         else:
-            to_pay = self.pay * 50
+            to_pay = self.to_pay * 50
 
         player.pay(to_pay)
         owner.money += to_pay
