@@ -13,18 +13,21 @@ class Player:
         self.trains = 0
         self.services = 0
         self.last_dices = 0
+        self.colors = None
 
         if agent is None:
             agent = InteractiveAgent()
-        self.agent =  agent
+        self.agent = agent
         self.agent.set_player(self)
 
-    def set_data(self, game, num):
+    def set_data(self, game, num, colors):
         self.game = game
         self.num = num
+        self.agent.set_game(game)
+        self.colors = {k: 0 for k in colors.keys()}
 
     def __eq__(self, other):
-        return (self.num == other.num) and (self.name == other.name)
+        return (other is not None) and (self.num == other.num) and (self.name == other.name)
 
     def move(self, dices):
         """ Advance one move of the player
@@ -50,9 +53,12 @@ class Player:
         return True
 
     def buy_houses(self, amount, position):
-        ### TODO: do it
-        ### Check if the player can put houses in the position selected
-        pass
+        ### TODO: Check if the player can put houses in the position selected
+        building = self.game.get_building(position)
+        to_pay = building.house_price * amount
+        if self.money >= to_pay:
+            building.houses += amount
+            self.pay(to_pay)
 
     def purchase(self, building):
         self.money -= building.price
@@ -69,8 +75,28 @@ class Player:
     def want_to_buy(self):
         return self.agent.want_to_buy()
 
+    def get_amount_of_color(self, color):
+        return self.colors[color]
+
     def want_buy_houses(self):
-        return self.agent.want_buy_houses()
+        positions_owned = self.game.get_positions_buildings_of_player(self)
+        posible_build = []
+        for pos in positions_owned:
+            b = self.game.get_building(pos)
+            color = b.color
+            if (color is not None) and (self.get_amount_of_color(color) == self.game.colors[color]):
+                ### TODO: Check the limit of houses
+                ### TODO: Check that the player has the necessary money to bui at least one house
+                posible_build.append((pos, b.house_price, b.houses))
+
+        can_buy_houses = len(posible_build) > 0
+        if can_buy_houses:
+            return self.agent.want_buy_houses(posible_build)
+        else:
+            return False, -1, -1
 
     def init_money_dict(self):
         return {1: 10, 5: 5, 10: 5, 20: 5, 50: 5, 100: 2, 500: 2}
+
+    def notify_cant_buy_bulding(self):
+        return self.agent.notify_cant_buy_bulding()

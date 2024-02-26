@@ -2,6 +2,7 @@ class Building:
     def __init__(self, name):
         self.name = name
         self.houses = 0
+        self.color = None
 
     def __call__(self, player):
         raise NotImplementedError
@@ -50,9 +51,12 @@ class TrainBuilding(Building):
         self.to_pay = 25
 
     def __call__(self, player):
-        if player.want_to_buy() and player.money >= self.price:
-            player.purchase(self)
-            player.trains += 1
+        if player.want_to_buy():
+            if player.money >= self.price:
+                player.purchase(self)
+                player.trains += 1
+            else:
+                player.notify_cant_buy_bulding()
 
     def pay(self, owner, player):
         to_pay = self.to_pay * (2 ** (owner.trains-1))
@@ -60,10 +64,12 @@ class TrainBuilding(Building):
         owner.money += to_pay
 
 class PropertyBuilding(Building):
-    def __init__(self, name, price, pay):
+    def __init__(self, name, price, pay, color, house_price):
         super().__init__(name)
         self.price = price
         self.to_pay = pay
+        self.color = color
+        self.house_price = house_price
 
     def __call__(self, player):
         if player.want_to_buy() and player.money >= self.price:
