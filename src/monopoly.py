@@ -145,6 +145,36 @@ class Monopoly:
                   38: TaxesBuilding("Luxury Tax", 100),
                   39: PropertyBuilding("Boardwalk", 400, 50, "Blue", 200)}
 
+    def set_state(self, new_state):
+        new_state = {"turn": 0, # index of the next player to play
+                     "players":
+                         [{"money": 2000,
+                           "position": 0,
+                           "buildings": [1, 3],
+                           "houses": [0, 0],
+                           "turns_in_jail": 0},
+
+                          {"money": 1500,
+                           "position": 0,
+                           "buildings": [6, 8, 9],
+                           "houses": [0, 0, 0],
+                           "turns_in_jail": 0}]
+                     }
+
+        assert (new_state["turn"] < 0) or (new_state["turn"] >= len(self.players)), "Not valid player index."
+        assert (len(new_state['players']) == len(self.players)), "Invalid number of players."
+
+        for i, player in enumerate(new_state['players']):
+            assert player['money'] > 0, "The money of all players need to be positive."
+            assert (player['position'] < 0) or (player['position'] >= len(self.building_selector)), "Invalid position."
+            assert len(player['position']) != len(player['position']), 'The length of the buildings and the houses of each building is not the same.'
+
+            self.players[i].money = player['money']
+
+        # Update the info of self.trains = 0
+        #         self.services = 0
+        #         self.colors = None
+
 
 
 class Dices:

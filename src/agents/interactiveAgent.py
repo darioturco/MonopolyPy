@@ -28,12 +28,12 @@ class InteractiveAgent:
         return False
 
     def want_buy_houses(self, posible_build):
-        # Posible buid -> list of (pos, b.house_price, b.houses)
-        """ The player decides whether them want to buy some houses. It returns
+        """ The player decides whether them want to buy some houses. The input posible_build is
+            a list of tuple of (position, house_price, amount_of_houses)
+            It returns
                     will_buy: boolean that is true if the player want to buy houses
                     amount_h: integer that indicate the amount of houses that the player want to buy
                     position_h: position that indicate the where the houses will be place """
-        ### TODO: Update documentation
         answer = -1
         while answer == -1:
             print("Wanna buy a house?")
@@ -46,12 +46,23 @@ class InteractiveAgent:
             if answer == 1:
                 return False, 0, 0
             elif (answer > 1) and (answer < len(posible_build)):
-                houses_to_build = self.get_amount_of_houses()
+                houses_to_build = self.get_amount_of_houses(posible_build[answer-2])
                 return True, answer, houses_to_build
 
-    def get_amount_of_houses(self):
-        # TODO: Complete
-        return 1
+    def get_amount_of_houses(self, info):
+        pos, house_price, amount_of_houses = info
+        answer = -1
+        max_houses = 5 - amount_of_houses
+        while answer == -1:
+            print("How many houses want you to buy?")
+            for i in range(1, max_houses+1):
+                if self.player.money >= house_price * i:
+                    print(f"{i}) {i}")
+
+            answer = input()
+            answer = self.parse_answer(answer, [(str(i), str(i)) for i in range(1, max_houses+1) if self.player.money >= (house_price * i)])
+
+        return answer + 1
 
     def parse_answer(self, answer, corrects):
         answer = answer.lower()

@@ -5,6 +5,3 @@ if "__main__" == __name__:
     print("Monopoly...")
     game = Monopoly()
     game.play()
-    #game.move()
-    #game.move()
-    #game.move()
