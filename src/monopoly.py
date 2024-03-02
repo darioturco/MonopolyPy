@@ -182,12 +182,6 @@ class Monopoly:
                 self.get_building(b).houses = h
 
             player.recalculate_info()
-        # self.owners = {i: None for i in range(len(self.building_selector))}
-        # Update the info of self.trains = 0
-        #         self.services = 0
-        #         self.colors = None
-
-
 
 class Dices:
     def __init__(self, max_value, verbose=False):
