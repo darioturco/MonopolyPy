@@ -98,5 +98,23 @@ class Player:
     def init_money_dict(self):
         return {1: 10, 5: 5, 10: 5, 20: 5, 50: 5, 100: 2, 500: 2}
 
-    def notify_cant_buy_bulding(self):
+    def notify_cant_buy_building(self):
         return self.agent.notify_cant_buy_bulding()
+
+    def recalculate_info(self):
+        self.trains = 0
+        self.services = 0
+        self.colors = {k: 0 for k in self.game.colors.keys()}
+
+        for p, b in enumerate(self.game.building_selector):
+            owner = self.game.get_owner_of(p)
+            if b == owner:
+                t = b.get_type()
+                if t == "Service":
+                    self.services += 1
+
+                if t == "Train":
+                    self.trains += 1
+
+                if b.color is not None:
+                    self.colors[b.color] += 1

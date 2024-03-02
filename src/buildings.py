@@ -10,18 +10,30 @@ class Building:
     def pay(self, owner, player):
         raise NotImplementedError
 
+    def get_type(self):
+        raise NotImplementedError
+
 class VoidBuilding(Building):
     def __call__(self, player):
         pass
+
+    def get_type(self):
+        return "Void"
 
 class JailBuilding(Building):
     def __call__(self, player):
         player.go_to_jail()
 
+    def get_type(self):
+        return "Jail"
+
 class LuckyBuilding(Building):
     def __call__(self, player):
         ### TODO: I don't know how to do this
         pass
+
+    def get_type(self):
+        return "Lucky"
 
 class ServiceBuilding(Building):
     def __init__(self, name):
@@ -44,6 +56,9 @@ class ServiceBuilding(Building):
         player.pay(to_pay)
         owner.money += to_pay
 
+    def get_type(self):
+        return "Service"
+
 class TrainBuilding(Building):
     def __init__(self, name):
         super().__init__(name)
@@ -62,6 +77,9 @@ class TrainBuilding(Building):
         to_pay = self.to_pay * (2 ** (owner.trains-1))
         player.pay(to_pay)
         owner.money += to_pay
+
+    def get_type(self):
+        return "Train"
 
 class PropertyBuilding(Building):
     def __init__(self, name, price, pay, color, house_price):
@@ -92,6 +110,9 @@ class PropertyBuilding(Building):
         player.pay(to_pay)
         owner.money += to_pay
 
+    def get_type(self):
+        return "Property"
+
 class TaxesBuilding(Building):
     def __init__(self, name, tax):
         super().__init__(name)
@@ -102,3 +123,6 @@ class TaxesBuilding(Building):
 
     def __call__(self, player):
         player.pay(self.tax)
+
+    def get_type(self):
+        return "Tax"
