@@ -30,16 +30,8 @@ class Monopoly:
         self.turn = self.players[self.player_index]
         self.turn_count = 0
 
-    def get_all_colors(self):
-        res = {}
-        for _, b in self.building_selector.items():
-            if b.color is not None:
-                if b.color not in res:
-                    res[b.color] = 0
-                res[b.color] += 1
-        return res
-
     def move(self):
+        """ Move the player that is his turn. """
         if self.finish:
             if self.verbose:
                 print("Game Over.")
@@ -52,15 +44,14 @@ class Monopoly:
             self.check_if_game_end()
             self.turn = self.next_player()
 
-
-
     def check_if_game_end(self):
+        """ Update the finished flag of the game. The game finish when some player have no more money """
         for p in self.players:
             if p.money < 0:
                 self.finish = True
-                #Todo: Set info of the finish game
 
     def fall_in(self, position):
+        """ Check if the position where a player fall is empty, and make the corresponding action. """
         if self.is_free(position):
             self.building_selector[position](self.turn)
 
@@ -68,6 +59,7 @@ class Monopoly:
             owner = self.get_owner_of(position)
             if owner != self.turn:
                 self.building_selector[position].pay(owner, self.turn)
+
     def is_owner_of(self, player, position):
         """ Returns whether the player own the position """
         owner = self.get_owner_of(position)
@@ -99,9 +91,20 @@ class Monopoly:
         return [p for p in self.building_selector.keys() if self.get_owner_of(p) == player]
 
     def play(self):
+        """ Start a game and move until the game finish """
         while not self.finish:
             self.move()
         print("Game over.")
+
+    def get_all_colors(self):
+        """ Get the set of all colors of the buildings. """
+        res = {}
+        for _, b in self.building_selector.items():
+            if b.color is not None:
+                if b.color not in res:
+                    res[b.color] = 0
+                res[b.color] += 1
+        return res
 
     def get_building_selector(self):
         return  {0: VoidBuilding("Start"),
