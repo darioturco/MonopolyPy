@@ -2,6 +2,7 @@ import numpy as np
 from src.player import Player
 from src.buildings import VoidBuilding, JailBuilding, PropertyBuilding, LuckyBuilding, TaxesBuilding, TrainBuilding, ServiceBuilding
 from src.graphs.plain_text import PlainText
+from src.environment import Environment
 
 class Monopoly:
     possible_players = ["car", "canyon", "horse", "hat", "ship", "dog", "iron", "barrow"]
@@ -22,6 +23,8 @@ class Monopoly:
             dices = Dices(6, verbose=True)
             #dices = TrickedDices(6, verbose=False)
         self.dices = dices
+
+        self.environment = Environment(self)
 
         self.finish = False
         self.verbose = verbose
