@@ -25,6 +25,7 @@ class Monopoly:
         self.dices = dices
 
         self.environment = Environment(self)
+        self.environment.reset()
 
         self.finish = False
         self.verbose = verbose

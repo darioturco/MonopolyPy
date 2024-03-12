@@ -101,6 +101,10 @@ class Player:
     def notify_cant_buy_building(self):
         return self.agent.notify_cant_buy_bulding()
 
+    def get_reward(self):
+        """ Each player decide what is the reward function that want to maximize """
+        return self.money
+
     def recalculate_info(self):
         self.trains = 0
         self.services = 0
