@@ -52,6 +52,9 @@ class Player:
         self.game.fall_in(self.position)
         return True
 
+    def want_to_buy(self):
+        return self.agent.want_to_buy()
+
     def buy_houses(self, amount, position):
         ### TODO: Check if the player can put houses in the position selected
         building = self.game.get_building(position)
@@ -71,9 +74,6 @@ class Player:
     def go_to_jail(self):
         self.turns_in_jail = 3
         self.position = 10
-
-    def want_to_buy(self):
-        return self.agent.want_to_buy()
 
     def get_amount_of_color(self, color):
         return self.colors[color]

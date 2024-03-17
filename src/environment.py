@@ -19,12 +19,11 @@ class Environment:
     def create_player_state(self, player):
         position = [float(player.position == k) for k, v in self.game.building_selector.items()]
         in_jail = [float(player.turns_in_jail > 0)]
-        buildings = []  # TODO: make better
-        money = [] # TODO: make better
+        buildings = [float(self.game.is_owner_of(player, position)) for position in self.game.building_selector.keys()]
+        money = [float(i+500 > player.money > i) for i in range(0, 2001, 500)]
 
         return position + in_jail + buildings + money
     def reset(self):
-        ### TODO: Think what is a state and complete how to get the initial state
         self.actual_state = self.create_state()
         return self.actual_state, self.is_finished
 
